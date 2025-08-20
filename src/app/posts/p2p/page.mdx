@@ -1,0 +1,295 @@
+export const metadata = {
+  title:
+    'How to Build a Peer-to-Peer (P2P) Video Call App with Node.js, WebRTC, and React.js (Because Why Not?)',
+  description:
+    'So, you want to build your very own video call app without relying on those big corporate overlords? Awesome. In this tutorial, we’ll dive into the mystical lands of Node.js, WebRTC, and React.js to create a P2P video call app that just works — mostly. Sure, Zoom and Teams exist, but isn’t it way more fun to build your own and maybe confuse your friends?',
+  alternates: {
+    canonical: '/posts/p2p',
+  },
+}
+
+# How to Build a Peer-to-Peer (P2P) Video Call App with Node.js, WebRTC, and React.js (Because Why Not?)
+
+So, you want to build your very own video call app without relying on those big corporate overlords? Awesome. In this tutorial, we’ll dive into the mystical lands of **Node.js, WebRTC, and React.js** to create a **P2P video call app** that just works — mostly. Sure, Zoom and Teams exist, but isn’t it way more fun to build your own and maybe confuse your friends?
+
+---
+
+## What Even Is WebRTC?
+
+If you thought WebRTC was just some random acronym, welcome to the club. It's actually **Web Real-Time Communication**, which is just fancy speak for “your browser can now whisper and shout directly with another browser without annoying middlemen.”
+
+It’s like having a secret chat room where you and your friend can talk without anyone else eavesdropping (unless you count your ISP, but let’s not get into that).
+
+---
+
+## The Master Plan: How This Magic Works
+
+- Node.js Server: Talks for you to connect you with your friend
+- Client Browser: Grabs your video and audio, and spits it at your buddy
+- WebRTC API: The sneaky tech that connects you two directly
+
+Think of it as: You call your friend, the server nudges them like, “Hey, your pal wants to chat,” and then boom, you’re chatting without anyone listening (hopefully).
+
+---
+
+## What You Need Before We Start Wrecking Code
+
+- Node.js installed (don’t pretend you don’t have this already)
+- Basic JavaScript & React.js skills
+- Two browsers or devices — because talking to yourself on one tab is awkward
+
+---
+
+## Step 1: Building the Node.js Signaling Server
+
+First, we set up the signaling server where all the whispering happens before the real party starts.
+
+Do this in your terminal:
+
+```bash
+mkdir p2p-call
+cd p2p-call
+pnpm init -y
+pnpm install express socket.io
+```
+
+Create a `server.js` file:
+
+```js
+const express = require('express');
+const http = require('http');
+const { Server } = require('socket.io');
+
+const app = express();
+const server = http.createServer(app);
+const io = new Server(server);
+
+app.use(express.static('public'));
+
+io.on('connection', socket => {
+    console.log(User connected: ${socket.id});
+    socket.on('join', room => {
+        socket.join(room);
+        const clients = io.sockets.adapter.rooms.get(room) || new Set();
+        io.to(room).emit('room_users', Array.from(clients));
+    });
+
+    socket.on('signal', data => {
+        socket.to(data.room).emit('signal', {
+            from: socket.id,
+            signal: data.signal
+        });
+    });
+
+    socket.on('disconnecting', () => {
+        const rooms = socket.rooms;
+        rooms.forEach(room => {
+            if (room !== socket.id) {
+                io.to(room).emit('user_left', socket.id);
+            }
+        });
+    });
+});
+
+const PORT = process.env.PORT || 3000;
+
+server.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+```
+
+If you followed this and it didn’t break your machine, congrats — you’re halfway there.
+
+---
+
+## Step 2: Frontend Wizardry with React.js
+
+Now, let’s create the React.js app that will handle the video calls. Create a new React app:
+
+```bash
+pnpm create vite p2p-call --template react
+cd p2p-call
+pnpm install
+pnpm install socket.io-client # Install socket.io-client
+```
+
+Inside the `src` folder, create a `VideoCall.tsx` file and paste this code:
+
+```jsx
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+
+const VideoCall = () => {
+  const [localStream, setLocalStream] = useState<MediaStream | null>(null);
+  const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
+  const [peerConnection, setPeerConnection] = useState<RTCPeerConnection | null>(null);
+  const [roomName, setRoomName] = useState('');
+  const navigate = useNavigate();
+
+  const localVideoRef = useRef<HTMLVideoElement>(null);
+  const remoteVideoRef = useRef<HTMLVideoElement>(null);
+
+  useEffect(() => {
+    if (!localStream || !remoteStream) return;
+
+    const peerConnection = new RTCPeerConnection({
+      iceServers: [{ urls: 'stun:stun.l.google.com:19302' }],
+    });
+    setPeerConnection(peerConnection);
+
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        console.log('Sending ICE candidate');
+        socket.emit('signal', { room: roomName, signal: event.candidate });
+      }
+    };
+
+    peerConnection.ontrack = (event) => {
+      if (event.track.kind === 'video') {
+        remoteVideoRef.current?.srcObject = event.streams[0];
+      } else if (event.track.kind === 'audio') {
+        remoteVideoRef.current?.srcObject = event.streams[0];
+      }
+    };
+
+    peerConnection.oniceconnectionstatechange = () => {
+      console.log('ICE connection state changed:', peerConnection.iceConnectionState);
+    };
+
+    peerConnection.onicegatheringstatechange = () => {
+      console.log('ICE gathering state changed:', peerConnection.iceGatheringState);
+    };
+
+    peerConnection.addTrack(localStream.getVideoTracks()[0], localStream);
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        setLocalStream(stream);
+        peerConnection.addTrack(stream.getVideoTracks()[0], stream);
+      })
+      .catch((error) => {
+        console.error('Error accessing local media stream:', error);
+      });
+
+    socket.emit('join', roomName);
+  }, [localStream, remoteStream, peerConnection, roomName]);
+
+  useEffect(() => {
+    if (!peerConnection) return;
+
+    peerConnection.onicecandidate = (event) => {
+      if (event.candidate) {
+        console.log('Sending ICE candidate');
+        socket.emit('signal', { room: roomName, signal: event.candidate });
+      }
+    };
+
+    peerConnection.ontrack = (event) => {
+      if (event.track.kind === 'video') {
+        localVideoRef.current?.srcObject = event.streams[0];
+      } else if (event.track.kind === 'audio') {
+        localVideoRef.current?.srcObject = event.streams[0];
+      }
+    };
+
+    peerConnection.oniceconnectionstatechange = () => {
+      console.log('ICE connection state changed:', peerConnection.iceConnectionState);
+    };
+
+    peerConnection.onicegatheringstatechange = () => {
+      console.log('ICE gathering state changed:', peerConnection.iceGatheringState);
+    };
+
+    navigator.mediaDevices.getUserMedia({ video: true, audio: true })
+      .then((stream) => {
+        setRemoteStream(stream);
+        peerConnection.addTrack(stream.getVideoTracks()[0], stream);
+      })
+      .catch((error) => {
+        console.error('Error accessing remote media stream:', error);
+      });
+  }, [peerConnection]);
+
+  const handleJoinRoom = (roomName: string) => {
+    setRoomName(roomName);
+  };
+
+  const handleLeaveRoom = () => {
+    socket.emit('leave', roomName);
+    setRoomName('');
+    setLocalStream(null);
+    setRemoteStream(null);
+    setPeerConnection(null);
+  };
+
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', width: '100%', maxWidth: 600, marginTop: 50 }}>
+        <h1 style={{ marginBottom: 50 }}>P2P Video Call</h1>
+        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 50 }}>
+            <input type="text" placeholder="Room Name" style={{ width: 200, marginRight: 10 }} />
+            <button onClick={() => handleJoinRoom(roomName)}>Join Room</button>
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center' }}>
+            <button onClick={handleLeaveRoom}>Leave Room</button>
+          </div>
+        </div>
+      </div>
+
+      {localStream && remoteStream && (
+        <>
+          <div style={{ display: 'flex', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 50 }}>
+            <video ref={localVideoRef} autoPlay muted playsInline style={{ width: 400, height: 300 }} />
+            <video ref={remoteVideoRef} autoPlay playsInline style={{ width: 400, height: 300 }} />
+          </div>
+        </>
+      )}
+    </div>
+  );
+};
+
+export default VideoCall;
+```
+
+Now, modify the `App.tsx` file to include the `VideoCall` component:
+
+```jsx
+import React from 'react'
+import VideoCall from './VideoCall'
+
+const App = () => {
+  return (
+    <div>
+      <VideoCall />
+    </div>
+  )
+}
+
+export default App
+```
+
+Finally, run the app & the server:
+
+```bash
+pnpm run dev # inside the frontend directory
+```
+
+```bash
+node server.js # inside the backend directory
+```
+
+Now, Open two different browser tabs or devices (because talking to yourself is only fun
+for so long). Visit: http://localhost:3000 on both. Enter the same room name in
+both tabs. Say cheese, because cameras will activate (permission prompts, yay!).
+Congratulations, you just created your own mini Zoom, minus all the unnecessary
+branding and privacy concerns.
+
+Wrap-Up That Makes You Sound Smart Look at you, building a real-time video chat app from scratch. Next, you can brag about how
+you tamed WebRTC, that mysterious beast. Of course, this setup is super
+basic—you probably want to add better UI, error handling, and multi-user support
+eventually. But hey, baby steps. If you want to be the overachiever, check out
+MDN’s WebRTC Docs or the WebRTC GitHub repo and become the true master of peer
+connections. Need help turning this beast into a production-ready app? Or just
+want to complain about how flaky WebRTC can be? I’m here for you. Happy coding
+(and video calling)!

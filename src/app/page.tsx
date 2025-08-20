@@ -1,118 +1,180 @@
-import { FaMapMarkerAlt, FaBriefcase } from "react-icons/fa";
-import { FaEnvelope, FaGithub, FaLinkedin } from "react-icons/fa6";
-import Image from "next/image";
-import { projects, skills } from "./data";
-import Link from "next/link";
+'use client'
+import { motion } from 'motion/react'
+import {
+  BLOG_POSTS,
+  EMAIL,
+  PROJECTS,
+  SOCIAL_LINKS,
+  WORK_EXPERIENCE,
+} from '~/data'
+import { MagneticSocialLink } from './_components/magnetic-social'
+import { Spotlight } from '~/components/ui/spotlight'
+import { AnimatedBackground } from '~/components/ui/animated-background'
+import Link from 'next/link'
+import { ProjectCard } from './_components/project-card'
 
-export default function Page() {
+const VARIANTS_CONTAINER = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15,
+    },
+  },
+}
+
+const VARIANTS_SECTION = {
+  hidden: { opacity: 0, y: 20, filter: 'blur(8px)' },
+  visible: { opacity: 1, y: 0, filter: 'blur(0px)' },
+}
+
+const TRANSITION_SECTION = {
+  duration: 0.3,
+}
+
+export default function Personal() {
   return (
-    <div className="min-h-screen px-6 py-12">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center gap-6 mb-6">
-          <Image
-            src="/sush.jpg"
-            alt="Susmita Das"
-            width={96}
-            height={96}
-            className="rounded-full object-cover w-24 h-24"
-          />
-          <div>
-            <h1 className="text-4xl font-bold text-black mb-1">susmita das</h1>
-            <div className="flex items-center gap-2">
-              <FaMapMarkerAlt className="text-[#555]" />
-              <span className="text-[#444]">noida, india</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <FaBriefcase className="text-[#555]" />
-              <span className="text-[#444]">cs student • full-stack dev</span>
-            </div>
-          </div>
+    <motion.main
+      className="space-y-12"
+      variants={VARIANTS_CONTAINER}
+      initial="hidden"
+      animate="visible"
+    >
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <div className="flex-1">
+          <p className="text-zinc-600 dark:text-zinc-400">
+            hello!!! i&apos;m susmita, cs student & full-stack dev who vibes
+            with modern tools like next.js, prisma, and typescript and loves
+            building products that solve real-world problems...
+          </p>
         </div>
+      </motion.section>
 
-        <p className="mb-8 text-lg leading-relaxed">
-          hello!!! i&apos;m susmita, cs student & full-stack dev who vibes with
-          modern tools like next.js, prisma, and typescript and loves building
-          products that solve real-world problems...
-        </p>
-
-        <h2 className="text-xl text-black font-semibold mb-4">projects</h2>
-        <div className="space-y-8">
-          {projects.map((project, i) => (
-            <div key={i}>
-              <h2 className="text-lg text-black font-semibold mb-2">
-                <Link
-                  href={project.url}
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <h3 className="mb-5 text-lg font-medium">Projects</h3>
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
+          {PROJECTS.map((project) => (
+            <div key={project.name} className="space-y-2">
+              <div className="relative rounded-xs bg-zinc-50/40 p-1 ring-1 ring-zinc-200/50 ring-inset dark:bg-zinc-950/40 dark:ring-zinc-800/50">
+                <ProjectCard src={project.thumbnail} />
+              </div>
+              <div className="px-1">
+                <a
+                  className="font-base group relative inline-block font-[450] text-zinc-900 dark:text-zinc-50"
+                  href={project.link}
                   target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-black hover:text-pink-600 transition-colors"
                 >
-                  {project.title}
-                </Link>
-              </h2>
-              <p className="text-[#333]">{project.description}</p>
+                  {project.name}
+                  <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 transition-all duration-200 group-hover:max-w-full dark:bg-zinc-50"></span>
+                </a>
+                <p className="text-base text-zinc-600 dark:text-zinc-400">
+                  {project.description}
+                </p>
+              </div>
             </div>
           ))}
         </div>
+      </motion.section>
 
-        <div className="mt-12">
-          <h2 className="text-xl text-black font-semibold mb-4">
-            skills & tools
-          </h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-sm text-[#222] animate-fade-in">
-            {skills.map((skill, i) => (
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <h3 className="mb-5 text-lg font-medium">Work Experience</h3>
+        <div className="flex flex-col space-y-2">
+          {WORK_EXPERIENCE.map((job) => (
+            <a
+              className="relative overflow-hidden rounded-xs bg-zinc-300/30 p-[1px] dark:bg-zinc-600/30"
+              href={job.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              key={job.id}
+            >
+              <Spotlight
+                className="from-red-900 via-red-800 to-red-700 blur-2xl dark:from-red-100 dark:via-red-200 dark:to-red-50"
+                size={64}
+              />
+              <div className="relative h-full w-full rounded-sm bg-pink-100 p-4 dark:bg-zinc-950">
+                <div className="relative flex w-full flex-row justify-between">
+                  <div>
+                    <h4 className="font-normal dark:text-zinc-100">
+                      {job.title}
+                    </h4>
+                    <p className="text-zinc-500 dark:text-zinc-400">
+                      {job.company}
+                    </p>
+                  </div>
+                  <p className="text-zinc-600 dark:text-zinc-400">
+                    {job.start} - {job.end}
+                  </p>
+                </div>
+              </div>
+            </a>
+          ))}
+        </div>
+      </motion.section>
+
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <h3 className="mb-3 text-lg font-medium">Blog</h3>
+        <div className="flex flex-col space-y-0">
+          <AnimatedBackground
+            enableHover
+            className="h-full w-full rounded-xs bg-pink-100 dark:bg-zinc-900/80"
+            transition={{
+              type: 'spring',
+              bounce: 0,
+              duration: 0.2,
+            }}
+          >
+            {BLOG_POSTS.map((post) => (
               <Link
-                key={i}
-                href={skill.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 hover:text-pink-600 transition-colors"
+                key={post.uid}
+                className="-mx-3 rounded-xs px-3 py-3"
+                href={post.link}
+                data-id={post.uid}
               >
-                <span className="text-lg">{skill.icon}</span>
-                <span>{skill.name}</span>
+                <div className="flex flex-col space-y-1">
+                  <h4 className="font-normal dark:text-zinc-100">
+                    {post.title}
+                  </h4>
+                  <p className="text-zinc-500 dark:text-zinc-400">
+                    {post.description}
+                  </p>
+                </div>
               </Link>
             ))}
-          </div>
+          </AnimatedBackground>
         </div>
+      </motion.section>
 
-        <div className="mt-12">
-          <h2 className="text-xl text-black font-semibold mb-4">contact</h2>
-          <div className="flex flex-col gap-2 text-[#222] text-sm">
-            <div className="flex items-center gap-2">
-              <FaEnvelope className="text-[#444]" />
-              <Link
-                href="mailto:hi@sushh.me"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-pink-600"
-              >
-                <span>hi@sushh.me</span>
-              </Link>
-            </div>
-            <div className="flex items-center gap-2">
-              <FaGithub className="text-[#444]" />
-              <Link
-                href="https://github.com/susmitadas22"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-pink-600"
-              >
-                github
-              </Link>
-            </div>
-            <div className="flex items-center gap-2">
-              <FaLinkedin className="text-[#444]" />
-              <Link
-                href="https://www.linkedin.com/in/susmitadas222/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-pink-600"
-              >
-                linkedin
-              </Link>
-            </div>
-          </div>
+      <motion.section
+        variants={VARIANTS_SECTION}
+        transition={TRANSITION_SECTION}
+      >
+        <h3 className="mb-5 text-lg font-medium">Connect</h3>
+        <p className="mb-5 text-zinc-600 dark:text-zinc-400">
+          Feel free to contact me at{' '}
+          <a className="underline dark:text-zinc-300" href={`mailto:${EMAIL}`}>
+            {EMAIL}
+          </a>
+        </p>
+        <div className="flex items-center justify-start space-x-3">
+          {SOCIAL_LINKS.map((link) => (
+            <MagneticSocialLink key={link.label} link={link.link}>
+              {link.label}
+            </MagneticSocialLink>
+          ))}
         </div>
-      </div>
-    </div>
-  );
+      </motion.section>
+    </motion.main>
+  )
 }
