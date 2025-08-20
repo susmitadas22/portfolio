@@ -40,17 +40,17 @@ export const WORK_EXPERIENCE: WorkExperience[] = [
 
 export const BLOG_POSTS: BlogPost[] = [
   {
+    title: 'AI in modern Web Development',
+    description: 'A deep dive into the intersection of AI and web development.',
+    link: '/posts/ai',
+    uid: 'blog-2',
+  },
+  {
     title: 'P2P Video Streaming with WebRTC',
     description:
       'A deep dive into building a peer-to-peer video streaming application using WebRTC.',
     link: '/posts/p2p',
     uid: 'blog-1',
-  },
-  {
-    title: 'AI in modern Web Development',
-    description: 'A deep dive into the intersection of AI and web development.',
-    link: '/posts/ai',
-    uid: 'blog-2',
   },
 ]
 
