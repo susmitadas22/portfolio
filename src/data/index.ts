@@ -2,11 +2,19 @@ import { BlogPost, Project, SocialLink, WorkExperience } from '~/types'
 
 export const PROJECTS: Project[] = [
   {
+    name: 'back2fits - shopify store',
+    description:
+      'sustainable fashion brand focused on upcycled, eco-friendly apparel.',
+    link: 'https://back2fits.store',
+    thumbnail: '/images/back2fits.png',
+    id: 'project0',
+  },
+  {
     name: 'mini crm - ai customer segmentation',
     description:
       'lightweight CRM w/ rule-based filtering + Gemini AI insights.',
     link: 'https://github.com/susmitadas22/mini-crm',
-    thumbnail: '/images/mini-crm.webp',
+    thumbnail: '/images/mini-crm.png',
     id: 'project1',
   },
   {
@@ -14,7 +22,7 @@ export const PROJECTS: Project[] = [
     description:
       'web3 product marketplace with escrow logic and loyalty rewards (ERC-20).',
     link: 'https://github.com/susmitadas22/trubuy',
-    thumbnail: '/images/trubuy.webp',
+    thumbnail: '/images/trubuy.png',
     id: 'project2',
   },
   {

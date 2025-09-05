@@ -12,7 +12,7 @@ export function ProjectCard({ src }: ProjectCardProps) {
         alt="Project thumbnail"
         fill
         style={{ objectFit: 'cover' }}
-        className="transform transition-transform duration-300 ease-in-out hover:scale-110"
+        className="transform transition-transform duration-300 ease-in-out hover:scale-105"
         priority
       />
     </div>
