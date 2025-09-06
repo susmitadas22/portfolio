@@ -12,6 +12,7 @@ import { Spotlight } from '~/components/ui/spotlight'
 import { AnimatedBackground } from '~/components/ui/animated-background'
 import Link from 'next/link'
 import { ProjectCard } from './_components/project-card'
+import { GithubIcon } from './_components/github'
 
 const VARIANTS_CONTAINER = {
   hidden: { opacity: 0 },
@@ -65,14 +66,27 @@ export default function Personal() {
                 <ProjectCard src={project.thumbnail} />
               </div>
               <div className="px-1">
-                <a
-                  className="font-base group relative inline-block font-[450] text-zinc-900 dark:text-zinc-50"
-                  href={project.link}
-                  target="_blank"
-                >
-                  {project.name}
-                  <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 transition-all duration-200 group-hover:max-w-full dark:bg-zinc-50"></span>
-                </a>
+                <div className="mb-1 flex flex-row items-center justify-between">
+                  <Link
+                    className="font-base group relative inline-block font-[450] text-zinc-900 dark:text-zinc-50"
+                    href={project.link}
+                    target="_blank"
+                  >
+                    {project.name}
+                    <span className="absolute bottom-0.5 left-0 block h-[1px] w-full max-w-0 bg-zinc-900 transition-all duration-200 group-hover:max-w-full dark:bg-zinc-50"></span>
+                  </Link>
+                  {project.github && (
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="ml-2 p-1 text-zinc-500 hover:text-zinc-700 dark:text-zinc-400 dark:hover:text-zinc-200"
+                      aria-label={`${project.name} GitHub Repository`}
+                    >
+                      <GithubIcon size={18} />
+                    </a>
+                  )}
+                </div>
                 <p className="text-base text-zinc-600 dark:text-zinc-400">
                   {project.description}
                 </p>

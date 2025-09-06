@@ -13,15 +13,17 @@ export const PROJECTS: Project[] = [
     name: 'mini crm - ai customer segmentation',
     description:
       'lightweight CRM w/ rule-based filtering + Gemini AI insights.',
-    link: 'https://github.com/susmitadas22/mini-crm',
+    link: 'https://mini-crm-mauve-two.vercel.app/',
     thumbnail: '/images/mini-crm.png',
+    github: 'https://github.com/susmitadas22/mini-crm',
     id: 'project1',
   },
   {
     name: 'trubuy - decentralized marketplace',
     description:
       'web3 product marketplace with escrow logic and loyalty rewards (ERC-20).',
-    link: 'https://github.com/susmitadas22/trubuy',
+    link: 'https://trubuy.vercel.app',
+    github: 'https://github.com/susmitadas22/trubuy',
     thumbnail: '/images/trubuy.png',
     id: 'project2',
   },
@@ -30,6 +32,7 @@ export const PROJECTS: Project[] = [
     description:
       'app to detect crop diseases from photos + crowdsourced alerts',
     link: 'https://github.com/susmitadas22/kisan-mitra',
+    github: 'https://github.com/susmitadas22/kisan-mitra',
     thumbnail: '/images/kisan-mitra.webp',
     id: 'project3',
   },

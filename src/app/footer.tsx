@@ -1,22 +1,24 @@
 'use client'
-import { MonitorIcon, MoonIcon, SunIcon } from 'lucide-react'
+import { MonitorIcon } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { AnimatedBackground } from '~/components/ui/animated-background'
 import { TextLoop } from '~/components/ui/text-loop'
 import { EMAIL } from '~/data'
+import { SunIcon } from './_components/sun'
+import { MoonIcon } from './_components/moon'
 
 const THEMES_OPTIONS = [
   {
     label: 'Light',
     id: 'light',
-    icon: <SunIcon className="h-4 w-4" />,
+    icon: <SunIcon className="h-4 w-4" size={16} />,
   },
   {
     label: 'Dark',
     id: 'dark',
-    icon: <MoonIcon className="h-4 w-4" />,
+    icon: <MoonIcon className="h-4 w-4" size={16} />,
   },
   {
     label: 'System',
