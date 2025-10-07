@@ -1,4 +1,4 @@
-import { BlogPost, Project, SocialLink, WorkExperience } from '~/types'
+import { Project, SocialLink, WorkExperience } from '~/types'
 
 export const PROJECTS: Project[] = [
   {
@@ -46,22 +46,6 @@ export const WORK_EXPERIENCE: WorkExperience[] = [
     end: 'Present',
     link: 'https://back2fits.store',
     id: 'work1',
-  },
-]
-
-export const BLOG_POSTS: BlogPost[] = [
-  {
-    title: 'AI in modern Web Development',
-    description: 'A deep dive into the intersection of AI and web development.',
-    link: '/posts/ai',
-    uid: 'blog-2',
-  },
-  {
-    title: 'P2P Video Streaming with WebRTC',
-    description:
-      'A deep dive into building a peer-to-peer video streaming application using WebRTC.',
-    link: '/posts/p2p',
-    uid: 'blog-1',
   },
 ]
 

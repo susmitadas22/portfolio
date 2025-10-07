@@ -11,8 +11,6 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends('next/core-web-vitals', 'next/typescript'),
-  // allow `_` as unused vars
-  // '_' is assigned a value but never used.eslint@typescript-eslint/no-unused-vars
   {
     files: ['**/*.ts', '**/*.tsx'],
     rules: {

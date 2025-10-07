@@ -8,7 +8,7 @@ export const Providers = ({ children }: { children: React.ReactNode }) => {
       enableSystem={true}
       attribute="class"
       storageKey="theme"
-      defaultTheme="light"
+      defaultTheme="system"
     >
       {children}
     </ThemeProvider>
